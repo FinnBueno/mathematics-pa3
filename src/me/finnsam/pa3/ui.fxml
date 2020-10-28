@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight = "-Infinity" maxWidth = "-Infinity" minHeight = "-Infinity" minWidth = "-Infinity" prefHeight = "400.0" prefWidth = "600.0" xmlns = "http://javafx.com/javafx/10.0.2-internal" xmlns:fx = "http://javafx.com/fxml/1">
+    <TabPane prefHeight = "387.0" prefWidth = "593.0" tabClosingPolicy = "UNAVAILABLE" AnchorPane.bottomAnchor = "0.0" AnchorPane.leftAnchor = "0.0" AnchorPane.rightAnchor = "0.0" AnchorPane.topAnchor = "0.0">
+        <Tab text = "Settings">
+            <fx:include source = "settings.fxml" fx:id="settingsPage" />
+        </Tab>
+        <Tab text = "Encryption">
+            <fx:include source = "encryption.fxml" fx:id="encryptionPage" />
+        </Tab>
+        <Tab text = "Decryption">
+            <fx:include source = "decryption.fxml" fx:id="decryptionPage" />
+        </Tab>
+    </TabPane>
+</AnchorPane>

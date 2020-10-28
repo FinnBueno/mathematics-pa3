@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.finnsam.pa3.controller.SettingsController">
+   <children>
+      <Label layoutX="14.0" layoutY="23.0" text="Input N:" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="16.0" />
+      <TextField fx:id="inputN" layoutX="69.0" layoutY="19.0" prefHeight="25.0" prefWidth="104.0" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="16.0" />
+      <Label fx:id="resultDisplay" alignment="TOP_LEFT" layoutX="14.0" layoutY="62.0" prefHeight="50.0" prefWidth="203.0" text="P and Q will appear here." AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" />
+      <Button fx:id="startButton" layoutX="189.0" layoutY="16.0" mnemonicParsing="false" text="Step 1" />
+   </children>
+</AnchorPane>
