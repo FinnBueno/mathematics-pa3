@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns = "http://javafx.com/javafx"
-            xmlns:fx = "http://javafx.com/fxml"
-            fx:controller = "me.finnsam.pa3.controller.EncryptionController"
-            prefHeight = "400.0" prefWidth = "600.0">
-
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.finnsam.pa3.controller.EncryptionController">
+   <children>
+      <Label layoutX="14.0" layoutY="23.0" text="Input N:" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="16.0" />
+      <TextField fx:id="inputN" layoutX="69.0" layoutY="19.0" prefHeight="25.0" prefWidth="104.0" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="16.0" />
+      <Label fx:id="step1Result" alignment="TOP_LEFT" layoutX="14.0" layoutY="62.0" prefHeight="50.0" prefWidth="203.0" text="P and Q will appear here." AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" />
+      <Button fx:id="step1Button" layoutX="189.0" layoutY="16.0" mnemonicParsing="false" text="Step 1" />
+      <Label fx:id="step2Result" layoutX="16.0" layoutY="129.0" text="E will appear here" />
+      <Button fx:id="step2Button" layoutX="190.0" layoutY="125.0" mnemonicParsing="false" text="Step 2" />
+      <TextArea fx:id="step3Input" layoutX="22.0" layoutY="197.0" prefHeight="169.0" prefWidth="232.0" />
+      <Button fx:id="step3Button" layoutX="275.0" layoutY="197.0" mnemonicParsing="false" text="Step 3" />
+      <Label layoutX="262.0" layoutY="273.0" text="&gt; Encrypted &gt;" />
+      <TextArea fx:id="step3Result" layoutX="345.0" layoutY="197.0" prefHeight="169.0" prefWidth="232.0" />
+   </children>
 </AnchorPane>
