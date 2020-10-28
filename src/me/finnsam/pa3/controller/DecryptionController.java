@@ -54,8 +54,13 @@ public class DecryptionController {
             return;
         }
 
-        d = e.modInverse(p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
-        decryptionResultDisplay.setText(String.format("D is %s", d.toString()));
+        BigInteger f = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        if (e.gcd(f).equals(BigInteger.ONE)) {
+            d = e.modInverse(f);
+            decryptionResultDisplay.setText(String.format("D is %s", d.toString()));
+        } else {
+            decryptionResultDisplay.setText("Wrong input for E, try a different number");
+        }
     }
 
     private void step2() {
