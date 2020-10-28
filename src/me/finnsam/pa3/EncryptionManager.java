@@ -3,6 +3,7 @@ package me.finnsam.pa3;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 /**
  * @author Finn Bon
@@ -31,6 +32,14 @@ public class EncryptionManager {
 			generatePhiAndN();
 		}
 		return this;
+	}
+
+	public BigInteger getP() {
+		return this.p;
+	}
+
+	public BigInteger getQ() {
+		return this.q;
 	}
 
 	private void generatePhiAndN() {
@@ -70,6 +79,8 @@ public class EncryptionManager {
 		for (int i = 0; i < message.length(); i++) {
 			encodedArray[i] = message.codePointAt(i);
 		}
+
+		System.out.println(Arrays.toString(encodedArray));
 
 		StringBuilder encryptedMessage = new StringBuilder();
 		for (int i : encodedArray) {
