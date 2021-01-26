@@ -14,7 +14,7 @@ import java.math.BigInteger;
  */
 public class EncryptionController {
 
-	private static final BigInteger FIRST_PRIME = new BigInteger("2");
+	private static final EncryptionManager EM = EncryptionManager.getInstance();
 
 	@FXML
 	private Button step1Button;
@@ -35,6 +35,9 @@ public class EncryptionController {
 	@FXML
 	private TextArea step3Input;
 
+	// encryption variables
+	private BigInteger p, q, n, publicKey;
+
 	public void initialize() {
 		step1Button.setOnAction(event -> onStep1());
 		step2Button.setOnAction(event -> onStep2());
@@ -43,9 +46,8 @@ public class EncryptionController {
 
 	private void onStep1() {
 		// start calculating P and Q.
-		BigInteger n;
 		try {
-			n = new BigInteger(inputN.getText());
+			this.n = new BigInteger(inputN.getText());
 		} catch (NumberFormatException e) {
 			step1Result.setText("N must be an integer");
 			return;
@@ -54,37 +56,28 @@ public class EncryptionController {
 		long startTime = System.currentTimeMillis();
 		// we start with dividing by 2, and then go up everytime we fail to the next prime number.
 		// As long as P remains less than or equal to half of N, we still have a chance to find one.
-		for (BigInteger p = new BigInteger(FIRST_PRIME.toString());
-			 p.compareTo(n.divide(FIRST_PRIME)) <= 0;
-			 p = p.nextProbablePrime()) {
-			// calculate the remainder of the division q = n / p. If there is no division, we have found a proper q.
-			BigInteger remainder = n.mod(p);
-			if (remainder.equals(BigInteger.ZERO)) {
-				// we've found a number that's dividable
-				// if n = p * q, then q = n / p.
-				BigInteger q = n.divide(p);
-				long endTime = System.currentTimeMillis();
-				step1Result.setText(String.format("P is %s\nQ is %s\nAmount of time busy finding p and q: %d ms", p.toString(), q.toString(), endTime - startTime));
-				EncryptionManager.getInstance().setP(p).setQ(q);
-				return;
-			}
-			// move onto next prime number
-			p = p.nextProbablePrime();
+		BigInteger[] pAndQ = EM.findQAndPForN(n);
+		if (pAndQ == null) {
+			step1Result.setText("No outcome for N could be found.");
+		} else {
+			this.p = pAndQ[0];
+			this.q = pAndQ[1];
+			long endTime = System.currentTimeMillis();
+			step1Result.setText(String.format("P is %s\nQ is %s\nAmount of time busy finding p and q: %d ms", p.toString(), q.toString(), endTime - startTime));
 		}
-		step1Result.setText("No outcome for N could be found.");
 	}
 
 	private void onStep2() {
 		try {
-			BigInteger e = EncryptionManager.getInstance().generateE().getE();
-			step2Result.setText(String.format("e is %s", e.toString()));
+			this.publicKey = EM.generateE(p, q);
+			step2Result.setText(String.format("e is %s", publicKey.toString()));
 		} catch (NullPointerException e) {
 			step2Result.setText("P and Q must first be set!");
 		}
 	}
 
 	private void onStep3() {
-		String encrypted = EncryptionManager.getInstance().encrypt(step3Input.getText());
+		String encrypted = EM.encrypt(step3Input.getText(), publicKey, n);
 		step3Result.setText(encrypted);
 	}
 }

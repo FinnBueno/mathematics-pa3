@@ -17,7 +17,7 @@ import java.util.List;
 public class DecryptionController {
 
     private EncryptionManager EM = EncryptionManager.getInstance();
-    private BigInteger d;
+    private BigInteger privateKey;
     private BigInteger n;
 
     @FXML
@@ -43,23 +43,24 @@ public class DecryptionController {
     }
 
     private void step1() {
-        BigInteger e;
-        BigInteger p = EM.getP();
-        BigInteger q = EM.getQ();
+        BigInteger publicKey;
         try {
             n = new BigInteger(decryptionInputN.getText());
-            e = new BigInteger(decryptionInputE.getText());
+            publicKey = new BigInteger(decryptionInputE.getText());
         } catch (NumberFormatException error) {
             decryptionResultDisplay.setText("N must be an integer");
             return;
         }
 
-        BigInteger f = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        if (e.gcd(f).equals(BigInteger.ONE)) {
-            d = e.modInverse(f);
-            decryptionResultDisplay.setText(String.format("D is %s", d.toString()));
-        } else {
+        BigInteger[] pAndQ = EM.findQAndPForN(n);
+        BigInteger p = pAndQ[0];
+        BigInteger q = pAndQ[1];
+
+        this.privateKey = EM.generateD(p, q, publicKey);
+        if (this.privateKey == null) {
             decryptionResultDisplay.setText("Wrong input for E, try a different number");
+        } else {
+            decryptionResultDisplay.setText(String.format("D is %s", privateKey.toString()));
         }
     }
 
@@ -80,11 +81,10 @@ public class DecryptionController {
         }
         encodedMessageTextArea.setText(encodedMessage.toString());
         decryptedMessageTextField.setText(decryptedString.toString());
-
     }
 
     private BigInteger decrypt(BigInteger message) {
-        return message.modPow(d, n);
+        return message.modPow(privateKey, n);
     }
 
     private char encodedToString(BigInteger message) {

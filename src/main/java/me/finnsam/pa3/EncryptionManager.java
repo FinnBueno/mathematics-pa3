@@ -10,50 +10,41 @@ import java.util.Arrays;
  */
 public class EncryptionManager {
 
+	private static final BigInteger FIRST_PRIME = new BigInteger("2");
+
 	private static EncryptionManager EM = new EncryptionManager();
 
 	public static EncryptionManager getInstance() {
 		return EM;
 	}
 
-	private BigInteger p, q, e, n, phi;
-
-	public EncryptionManager setP(BigInteger p) {
-		this.p = p;
-		if (q != null) {
-			generatePhiAndN();
+	public BigInteger[] findQAndPForN(BigInteger n) {
+		for (BigInteger p = new BigInteger(FIRST_PRIME.toString());
+			 p.compareTo(n.divide(FIRST_PRIME)) <= 0;
+			 p = p.nextProbablePrime()) {
+			// calculate the remainder of the division q = n / p. If there is no division, we have found a proper q.
+			BigInteger remainder = n.mod(p);
+			if (remainder.equals(BigInteger.ZERO)) {
+				// we've found a number that's dividable
+				// if n = p * q, then q = n / p.
+				BigInteger q = n.divide(p);
+				return new BigInteger[] { p, q };
+			}
+			// move onto next prime number
+			p = p.nextProbablePrime();
 		}
-		return this;
+		return null;
 	}
 
-	public EncryptionManager setQ(BigInteger q) {
-		this.q = q;
-		if (p != null) {
-			generatePhiAndN();
-		}
-		return this;
-	}
-
-	public BigInteger getP() {
-		return this.p;
-	}
-
-	public BigInteger getQ() {
-		return this.q;
-	}
-
-	private void generatePhiAndN() {
-		n = q.multiply(p);
-		phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+	public BigInteger generatePhi(BigInteger p, BigInteger q) {
+		return p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 	}
 
 	/**
 	 * Generate and set E, which must be a number above 3 and lower than P*Q.
 	 */
-	public EncryptionManager generateE() {
-		if (p == null || q == null) {
-			throw new NullPointerException("P and Q must be set before generating E");
-		}
+	public BigInteger generateE(BigInteger p, BigInteger q) {
+		BigInteger phi = generatePhi(p, q);
 		try {
 			int length = phi.bitLength() - 1;
 			SecureRandom secureRandom = SecureRandom.getInstanceStrong();
@@ -62,32 +53,36 @@ public class EncryptionManager {
 			while (!phi.gcd(e).equals(BigInteger.ONE)) {
 				e = BigInteger.probablePrime(length, secureRandom);
 			}
-			this.e = e;
+			return BigInteger.valueOf(16381);
 		} catch (NoSuchAlgorithmException ex) {
 			ex.printStackTrace();
 		}
-		return this;
+		return null;
 	}
 
-	public BigInteger getE() {
-		return e;
+	public BigInteger generateD(BigInteger p, BigInteger q, BigInteger e) {
+		BigInteger phi = EM.generatePhi(p, q);
+		if (e.gcd(phi).equals(BigInteger.ONE)) {
+			return e.modInverse(phi);
+		}
+		return null;
 	}
 
-	public String encrypt(String text) {
+	public String encrypt(String text, BigInteger publicKey, BigInteger n) {
 		int[] encodedArray = new int[text.length()];
 		StringBuilder message = new StringBuilder(text);
 		for (int i = 0; i < message.length(); i++) {
 			encodedArray[i] = message.codePointAt(i);
 		}
 
-		System.out.println(Arrays.toString(encodedArray));
-
-		StringBuilder encryptedMessage = new StringBuilder();
-		for (int i : encodedArray) {
-			int c = mpMod(i, e.intValue(), n.intValue());
-			encryptedMessage.append(c).append(',');
-		}
-		return encryptedMessage.toString();
+		return String.join(
+			",",
+			Arrays
+				.stream(encodedArray)
+				.map(i -> mpMod(i, publicKey.intValue(), n.intValue()))
+				.mapToObj(String::valueOf)
+				.toArray(String[]::new)
+		);
 	}
 
 	private int mpMod(int base, int exponent, int modulus) {
